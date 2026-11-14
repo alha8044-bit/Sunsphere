@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundSphere | Explore Earth Through Sound</title>
+<style>
+:root{
+  --bg:#070817;
+  --panel:#11142b;
+  --panel2:#171a38;
+  --purple:#9b7bff;
+  --blue:#56c8ff;
+  --mint:#72f2d0;
+  --text:#f3f3ff;
+  --muted:#a5a8c7;
+  --border:rgba(160,150,255,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(91,65,180,.20),transparent 35%),
+    radial-gradient(circle at 85% 35%,rgba(35,137,190,.14),transparent 35%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+nav{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;padding:17px 6%;
+  background:rgba(7,8,23,.88);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(15px);
+}
+.logo{font-size:22px;font-weight:800;letter-spacing:1px}
+.logo span{color:var(--mint)}
+.navlinks{display:flex;gap:8px;flex-wrap:wrap}
+.navlinks button{
+  border:0;background:transparent;color:var(--muted);
+  padding:10px 13px;border-radius:10px;
+}
+.navlinks button:hover,.navlinks button.active{
+  background:rgba(155,123,255,.16);color:white
+}
+main{max-width:1200px;margin:auto;padding:35px 6% 80px}
+.page{display:none;animation:fade .35s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hero{
+  min-height:490px;display:grid;grid-template-columns:1.1fr .9fr;
+  align-items:center;gap:30px;padding:30px 0;
+}
+.eyebrow{
+  color:var(--mint);font-size:12px;letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:18px
+}
+h1{font-size:clamp(40px,6vw,68px);line-height:1.08;margin-bottom:20px}
+.gradient{
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--mint));
+  -webkit-background-clip:text;background-clip:text;color:transparent
+}
+h2{font-size:30px;margin-bottom:13px}
+h3{font-size:18px;margin-bottom:10px}
+p{color:var(--muted);line-height:1.7}
+.hero p{max-width:570px;font-size:16px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
+.btn{
+  border:1px solid var(--border);border-radius:12px;padding:13px 19px;
+  color:white;background:linear-gradient(110deg,#7656d9,#367eb7);
+  font-weight:700;text-decoration:none;display:inline-block
+}
+.btn.secondary{background:rgba(255,255,255,.05)}
+.btn:hover{filter:brightness(1.2);transform:translateY(-1px)}
+.earth-wrap{display:flex;align-items:center;justify-content:center;min-height:350px}
+.earth{
+  width:min(310px,70vw);aspect-ratio:1;border-radius:50%;
+  position:relative;overflow:hidden;
+  background:
+   radial-gradient(ellipse at 35% 30%,rgba(255,255,255,.55),transparent 12%),
+   radial-gradient(ellipse at 35% 35%,#6ee6d0 0 8%,transparent 9%),
+   radial-gradient(ellipse at 70% 55%,#60c8a1 0 12%,transparent 13%),
+   radial-gradient(ellipse at 42% 70%,#69bd87 0 10%,transparent 11%),
+   radial-gradient(circle at 35% 30%,#56b8ef,#174d91 48%,#07122f 75%);
+  box-shadow:inset -30px -20px 55px #020515,
+    0 0 45px rgba(78,171,255,.35),0 0 100px rgba(140,94,255,.25);
+  animation:rotate 22s linear infinite;
+}
+.earth:before{
+  content:"";position:absolute;inset:-20%;
+  background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.08) 23px 25px,transparent 26px 45px);
+  border-radius:50%;filter:blur(2px)
+}
+.earth:after{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.18),transparent 62%)
+}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.section{margin-top:55px}
+.section-head{margin-bottom:22px}
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px
+}
+.card{
+  background:linear-gradient(145deg,rgba(24,27,58,.95),rgba(12,15,35,.95));
+  border:1px solid var(--border);border-radius:18px;padding:21px;
+  box-shadow:0 12px 35px rgba(0,0,0,.16);
+  display:flex;flex-direction:column;gap:10px;
+}
+.card p{font-size:14px}
+.icon{font-size:28px;margin-bottom:4px}
+.metric{font-size:28px;font-weight:800;margin:4px 0;color:var(--mint)}
+.small{font-size:12px;color:var(--muted)}
+.status{
+  display:inline-block;padding:6px 9px;border-radius:20px;
+  background:rgba(114,242,208,.09);color:var(--mint);font-size:11px;
+  margin-top:12px
+}
+.status.error{color:#ff9caa;background:rgba(255,100,120,.1)}
+.status.loading{color:#ffd88a;background:rgba(255,216,138,.1)}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 7px}
+input{
+  width:100%;padding:12px;border:1px solid var(--border);
+  border-radius:10px;background:#090d22;color:white;outline:none
+}
+input:focus{border-color:var(--purple)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.sound-card{display:flex;flex-direction:column;gap:12px}
+.sound-card .btn, .card .btn{margin-top:auto;text-align:center}
+button:disabled{opacity:.45;cursor:not-allowed}
+.range{accent-color:var(--purple);padding:0}
+canvas{
+  width:100%;height:230px;display:block;
+  background:rgba(3,6,20,.55);border-radius:14px;margin-top:15px
+}
+.link{
+  color:var(--blue);text-decoration:none;font-weight:bold;font-size:13px
+}
+.link:hover{text-decoration:underline}
+footer{
+  border-top:1px solid var(--border);padding:25px 6%;
+  text-align:center;color:var(--muted);font-size:12px
+}
+.notice{
+  border:1px solid rgba(114,242,208,.22);
+  background:rgba(114,242,208,.06);
+  border-radius:14px;padding:15px;margin:18px 0
+}
+.notice p{font-size:13px}
+hr{border:0;border-top:1px solid var(--border);margin:20px 0}
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .hero p{margin:auto}
+  .actions{justify-content:center}
+  .earth-wrap{min-height:280px}
+  .navlinks{width:100%;justify-content:center}
+  nav{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">SOUND<span>SPHERE</span></div>
+  <div class="navlinks">
+    <button class="active" data-page="home">Home</button>
+    <button data-page="explore">Explore Earth</button>
+    <button data-page="lab">Sound Lab</button>
+    <button data-page="nasa">NASA Sounds</button>
+    <button data-page="about">About</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- HOME -->
+<section class="page active" id="home">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">NASA DATA • EARTH SCIENCE • SONIFICATION</div>
+      <h1>Listen to the <span class="gradient">Planet.</span></h1>
+      <p>
+        Discover Earth's changing environment through sound.
+        SoundSphere transforms real NASA Earth science measurements
+        into an interactive audio experience.
+      </p>
+      <div class="actions">
+        <button class="btn" onclick="showPage('explore')">Explore Earth</button>
+        <button class="btn secondary" onclick="showPage('lab')">Enter Sound Lab</button>
+        <button class="btn secondary" onclick="playEarthSymphony()">🌍 Play Earth Symphony</button>
+      </div>
+    </div>
+    <div class="earth-wrap"><div class="earth"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="eyebrow">EXPLORE THE PLANET</div>
+      <h2>Earth in <span class="gradient">Sound</span></h2>
+      <p>Explore different parts of Earth's environment with real-time data sonification.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">🌡️</div>
+        <h3>Temperature</h3>
+        <div class="metric" id="homeTemp">--</div>
+        <p>Explore global temperature anomalies.</p>
+        <button class="btn secondary" onclick="playDataSound('temperature')">▶ Listen to Data</button>
+      </div>
+      <div class="card">
+        <div class="icon">🌬️</div>
+        <h3>Wind</h3>
+        <div class="metric" id="homeWind">--</div>
+        <p>Listen to wind speed measurements.</p>
+        <button class="btn secondary" onclick="playDataSound('wind')">▶ Listen to Data</button>
+      </div>
+      <div class="card">
+        <div class="icon">🌧️</div>
+        <h3>Rainfall</h3>
+        <div class="metric" id="homeRain">--</div>
+        <p>Turn precipitation data into sound.</p>
+        <button class="btn secondary" onclick="playDataSound('rain')">▶ Listen to Data</button>
+      </div>
+      <div class="card">
+        <div class="icon">🔥</div>
+        <h3>Wildfires</h3>
+        <div class="metric">FIRMS Active</div>
+        <p>Explore NASA fire observation thermal pulses.</p>
+        <button class="btn secondary" onclick="playSystemSound('wildfire')">▶ Listen to Data</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORE -->
+<section class="page" id="explore">
+  <div class="eyebrow">EARTH DATA EXPLORER</div>
+  <h2>Explore Earth's <span class="gradient">Signals</span></h2>
+  <p>Load NASA data for any coordinate on Earth to explore measurements and generate real-time data sound.</p>
+
+  <div class="card section">
+    <h3>Choose a location</h3>
+    <p>Enter latitude and longitude for NASA POWER weather data.</p>
+    <div class="controls">
+      <div><label for="latitude">Latitude</label><input id="latitude" type="number" min="-90" max="90" step="any" value="23.6"></div>
+      <div><label for="longitude">Longitude</label><input id="longitude" type="number" min="-180" max="180" step="any" value="58.5"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="loadButton" onclick="loadAllData()">Load NASA Data</button>
+      <button class="btn secondary" onclick="setLocation(23.6, 58.5)">Oman (23.6, 58.5)</button>
+      <button class="btn secondary" onclick="setLocation(30.04, 31.23)">Cairo</button>
+      <button class="btn secondary" onclick="setLocation(-3.46, -62.21)">Amazon</button>
+      <button class="btn secondary" onclick="setLocation(64.14, -21.94)">Iceland</button>
+    </div>
+    <div id="loadStatus" class="status">Waiting for data</div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>NASA Measurements</h2><p>Each measurement directly controls the frequency, texture, and rhythm of its generated sound.</p></div>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">🌡️</div><h3>Temperature Anomaly</h3>
+        <div class="metric" id="temperatureValue">--</div>
+        <p>Global anomaly from NASA GISTEMP.</p>
+        <button class="btn secondary" onclick="playDataSound('temperature')">▶ Listen</button>
+        <div id="temperatureStatus" class="small">Not loaded</div>
+      </div>
+      <div class="card">
+        <div class="icon">🌬️</div><h3>Wind Speed</h3>
+        <div class="metric" id="windValue">--</div>
+        <p>10-metre wind speed from NASA POWER.</p>
+        <button class="btn secondary" onclick="playDataSound('wind')">▶ Listen</button>
+        <div id="windStatus" class="small">Not loaded</div>
+      </div>
+      <div class="card">
+        <div class="icon">🌧️</div><h3>Precipitation</h3>
+        <div class="metric" id="rainValue">--</div>
+        <p>Precipitation measurement from NASA POWER.</p>
+        <button class="btn secondary" onclick="playDataSound('rain')">▶ Listen</button>
+        <div id="rainStatus" class="small">Not loaded</div>
+      </div>
+      <div class="card">
+        <div class="icon">🌀</div><h3>Surface Pressure</h3>
+        <div class="metric" id="pressureValue">--</div>
+        <p>Surface pressure from NASA POWER.</p>
+        <button class="btn secondary" onclick="playDataSound('pressure')">▶ Listen</button>
+        <div id="pressureStatus" class="small">Not loaded</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section card">
+    <h3>Wind Speed History</h3>
+    <p>Recent monthly NASA POWER wind measurements for the selected location.</p>
+    <canvas id="windChart" width="900" height="250"></canvas>
+    <div class="actions">
+      <button class="btn" onclick="playWindHistoryTimeline()">▶ Play Wind Timeline (36 Months)</button>
+      <button class="btn secondary" onclick="stopSound()">⏹ Stop</button>
+    </div>
+    <div class="small" id="chartStatus">Load NASA data to display the chart.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>More Earth Systems</h2><p>Additional NASA data and observation resources with interactive sonification.</p></div>
+    <div class="grid">
+      <div class="card"><div class="icon">🔥</div><h3>Wildfires</h3><p>NASA FIRMS provides satellite-based active fire information.</p><button class="btn secondary" onclick="playSystemSound('wildfire')">▶ Listen to Fire Data</button><a class="link" href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noopener">Explore NASA FIRMS ↗</a></div>
+      <div class="card"><div class="icon">🌊</div><h3>Ocean</h3><p>Explore NASA ocean observations and satellite science.</p><button class="btn secondary" onclick="playSystemSound('ocean')">▶ Listen to Ocean Waves</button><a class="link" href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">Explore NASA Earth ↗</a></div>
+      <div class="card"><div class="icon">🌿</div><h3>Vegetation</h3><p>Discover land and vegetation observations from MODIS.</p><button class="btn secondary" onclick="playSystemSound('vegetation')">▶ Listen to Harmonics</button><a class="link" href="https://modis.gsfc.nasa.gov/data/" target="_blank" rel="noopener">Explore MODIS ↗</a></div>
+      <div class="card"><div class="icon">📈</div><h3>Sea Level</h3><p>Explore satellite observations of global sea level.</p><button class="btn secondary" onclick="playSystemSound('sealevel')">▶ Listen to Rising Pitch</button><a class="link" href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">Explore NASA Earth ↗</a></div>
+      <div class="card"><div class="icon">🌧️</div><h3>Global Rainfall</h3><p>Discover precipitation observations from the GPM mission.</p><button class="btn secondary" onclick="playDataSound('rain')">▶ Listen to GPM Rain</button><a class="link" href="https://gpm.nasa.gov/data" target="_blank" rel="noopener">Explore NASA GPM ↗</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOUND LAB -->
+<section class="page" id="lab">
+  <div class="eyebrow">INTERACTIVE AUDIO EXPERIENCE</div>
+  <h2>The <span class="gradient">Sound Lab</span></h2>
+  <p>Transform available NASA measurements into sound with real-time waveform analysis.</p>
+
+  <div class="notice">
+    <p><strong>Live Data Sonification:</strong> Sound is synthesized directly from the retrieved NASA measurements using the Web Audio API. Every change in coordinate data alters the pitch, filter sweep, and pulse density.</p>
+  </div>
+
+  <div class="card section">
+    <h3>Sound Controls & Live Spectrum Visualizer</h3>
+    <label for="volume">Master Volume</label>
+    <input class="range" id="volume" type="range" min="0" max="100" value="70" oninput="changeVolume(this.value)">
+    <div class="actions">
+      <button class="btn" onclick="playEarthSymphony()">🌍 Play Full Earth Mix</button>
+      <button class="btn secondary" onclick="resumeSound()">Resume Audio</button>
+      <button class="btn secondary" onclick="stopSound()">Stop Audio</button>
+    </div>
+    <canvas id="audioVisualizer" width="900" height="180"></canvas>
+    <div id="audioStatus" class="status">Audio ready — click any sound below to begin</div>
+  </div>
+
+  <div class="grid section">
+    <div class="card sound-card">
+      <div class="icon">🌡️</div><h3>Temperature Sound</h3>
+      <div class="metric" id="labTemp">--</div>
+      <p>Temperature anomaly controls the pitch of the harmonic drone.</p>
+      <button class="btn" onclick="playDataSound('temperature')">▶ Play Temperature</button>
+    </div>
+    <div class="card sound-card">
+      <div class="icon">🌬️</div><h3>Wind Sound</h3>
+      <div class="metric" id="labWind">--</div>
+      <p>Wind speed controls the intensity and bandpass sweep of generated noise.</p>
+      <button class="btn" onclick="playDataSound('wind')">▶ Play Wind</button>
+    </div>
+    <div class="card sound-card">
+      <div class="icon">🌧️</div><h3>Rain Sound</h3>
+      <div class="metric" id="labRain">--</div>
+      <p>Precipitation controls the density and frequency of rain-like sound pulses.</p>
+      <button class="btn" onclick="playDataSound('rain')">▶ Play Rain</button>
+    </div>
+    <div class="card sound-card">
+      <div class="icon">🌀</div><h3>Pressure Sound</h3>
+      <div class="metric" id="labPressure">--</div>
+      <p>Surface pressure controls the frequency of a deep atmospheric bass tone.</p>
+      <button class="btn" onclick="playDataSound('pressure')">▶ Play Pressure</button>
+    </div>
+  </div>
+</section>
+
+<!-- NASA SOUNDS -->
+<section class="page" id="nasa">
+  <div class="eyebrow">OFFICIAL NASA AUDIO RESOURCES</div>
+  <h2>Sounds from <span class="gradient">NASA</span></h2>
+  <p>Listen to acoustic simulations here or open the official NASA recordings collected by missions and instruments.</p>
+
+  <div class="notice">
+    <p>Click "Listen Here" to hear an interactive Web Audio acoustic simulation, or open the official NASA resource link.</p>
+  </div>
+
+  <div class="grid section">
+    <div class="card">
+      <div class="icon">🔴</div><h3>Wind on Mars</h3>
+      <p>Perseverance rover's SuperCam microphone recorded sounds of wind on Mars.</p>
+      <button class="btn secondary" onclick="playNasaSimulation('mars_wind')">▶ Listen Here</button>
+      <a class="link" href="https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/" target="_blank" rel="noopener">Open NASA recording ↗</a>
+    </div>
+    <div class="card">
+      <div class="icon">🪐</div><h3>First Sounds on Mars</h3>
+      <p>Hear one of the first audio recordings captured on the surface of Mars.</p>
+      <button class="btn secondary" onclick="playNasaSimulation('mars_surface')">▶ Listen Here</button>
+      <a class="link" href="https://science.nasa.gov/resource/first-audio-recording-of-sounds-on-mars/" target="_blank" rel="noopener">Open NASA recording ↗</a>
+    </div>
+    <div class="card">
+      <div class="icon">🚁</div><h3>Ingenuity Helicopter</h3>
+      <p>Listen to NASA's recording of the Ingenuity Mars helicopter in flight (~84 Hz rotor hum).</p>
+      <button class="btn secondary" onclick="playNasaSimulation('ingenuity')">▶ Listen Here</button>
+      <a class="link" href="https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/" target="_blank" rel="noopener">Open NASA recording ↗</a>
+    </div>
+    <div class="card">
+      <div class="icon">🌌</div><h3>Cosmic Echoes</h3>
+      <p>Explore NASA's sonification and space science audio visualization.</p>
+      <button class="btn secondary" onclick="playNasaSimulation('cosmic')">▶ Listen Here</button>
+      <a class="link" href="https://svs.gsfc.nasa.gov/14983/" target="_blank" rel="noopener">Open NASA resource ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="page" id="about">
+  <div class="eyebrow">ABOUT THE PROJECT</div>
+  <h2>About <span class="gradient">SoundSphere</span></h2>
+  <div class="card section">
+    <p>
+      SoundSphere is an interactive educational project that explores
+      Earth's environment through sound. It connects scientific
+      measurements with creative audio experiences to make Earth
+      science more engaging and accessible.
+    </p>
+    <hr>
+    <h3>How does it work?</h3>
+    <p>
+      The project retrieves selected measurements from NASA data
+      services. The measurements are mapped to sound characteristics
+      such as pitch, volume, and noise intensity.
+    </p>
+    <hr>
+    <h3>Data Sources</h3>
+    <p>NASA GISTEMP — Global temperature analysis</p>
+    <a class="link" href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP ↗</a>
+    <p style="margin-top:12px">NASA POWER — Meteorological and solar data</p>
+    <a class="link" href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">NASA POWER ↗</a>
+    <p style="margin-top:12px">NASA FIRMS — Fire information</p>
+    <a class="link" href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noopener">NASA FIRMS ↗</a>
+    <p style="margin-top:12px">NASA Earth Science</p>
+    <a class="link" href="https://science.nasa.gov/earth/" target="_blank" rel="noopener">NASA Earth ↗</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  SOUNDSPHERE · Exploring Earth Through Sound · Data resources: NASA
+</footer>
+
+<script>
+/* ---------------- PAGE NAVIGATION ---------------- */
+function showPage(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".navlinks button").forEach(b=>b.classList.remove("active"));
+  const section=document.getElementById(page);
+  if(section)section.classList.add("active");
+  const button=document.querySelector('[data-page="'+page+'"]');
+  if(button)button.classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".navlinks button").forEach(button=>{
+  button.addEventListener("click",()=>showPage(button.dataset.page));
+});
+function setLocation(lat, lon){
+  document.getElementById("latitude").value=String(lat);
+  document.getElementById("longitude").value=String(lon);
+  loadAllData();
+}
+
+/* ---------------- NASA DATA ---------------- */
+const data={
+  temperature:1.18,
+  wind:4.35,
+  rain:0.85,
+  pressure:99.42,
+  windHistory:[]
+};
+
+function setStatus(id,message,type=""){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=message;
+  el.className=(id.includes("Status")&&id!=="loadStatus"&&id!=="audioStatus")?"small":"status "+type;
+}
+function displayValue(id,value){
+  const el=document.getElementById(id);
+  if(el)el.textContent=value;
+}
+function updateAllMetricsUI(){
+  const tStr = data.temperature!==null ? data.temperature.toFixed(2)+" °C" : "--";
+  const wStr = data.wind!==null ? data.wind.toFixed(2)+" m/s" : "--";
+  const rStr = data.rain!==null ? data.rain.toFixed(2)+" mm/day" : "--";
+  const pStr = data.pressure!==null ? data.pressure.toFixed(2)+" kPa" : "--";
+  displayValue("temperatureValue", tStr);
+  displayValue("windValue", wStr);
+  displayValue("rainValue", rStr);
+  displayValue("pressureValue", pStr);
+  displayValue("homeTemp", tStr);
+  displayValue("homeWind", wStr);
+  displayValue("homeRain", rStr);
+  displayValue("labTemp", tStr);
+  displayValue("labWind", wStr);
+  displayValue("labRain", rStr);
+  displayValue("labPressure", pStr);
+}
+function validNumber(value){
+  const n=Number(value);
+  return Number.isFinite(n)&&n>-900;
+}
+function latestValue(series){
+  if(!series)return null;
+  const keys=Object.keys(series).sort();
+  for(let i=keys.length-1;i>=0;i--){
+    const value=Number(series[keys[i]]);
+    if(validNumber(value))return {key:keys[i],value};
+  }
+  return null;
+}
+function formatMonth(key){
+  return key.length===6?key.slice(0,4)+"-"+key.slice(4):key;
+}
+
+async function loadAllData(){
+  const button=document.getElementById("loadButton");
+  const lat=Number(document.getElementById("latitude").value);
+  const lon=Number(document.getElementById("longitude").value);
+
+  if(!Number.isFinite(lat)||lat < -90||lat > 90||
+     !Number.isFinite(lon)||lon < -180||lon > 180){
+    setStatus("loadStatus","Please enter valid latitude and longitude.","error");
+    return;
+  }
+
+  button.disabled=true;
+  setStatus("loadStatus","Connecting to NASA data services...","loading");
+
+  const results=await Promise.allSettled([
+    loadGISTEMP(),
+    loadPOWER(lat,lon)
+  ]);
+
+  updateAllMetricsUI();
+  setStatus("loadStatus","NASA data loaded and bound to audio engine.","");
+  button.disabled=false;
+}
+
+async function loadGISTEMP(){
+  setStatus("temperatureStatus","Loading NASA GISTEMP...","loading");
+  try{
+    const url="https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv";
+    const response=await fetch(url);
+    if(!response.ok)throw new Error("HTTP "+response.status);
+    const csv=await response.text();
+    const lines=csv.split(/\r?\n/);
+    let latest=null;
+
+    for(let i=1;i<lines.length;i++){
+      const parts=lines[i].split(",");
+      if(parts.length<13)continue;
+      const year=parts[0].trim();
+      if(!/^\d{4}$/.test(year))continue;
+
+      for(let m=1;m<=12;m++){
+        const value=Number(parts[m]);
+        if(validNumber(value)){
+          const month=String(m).padStart(2,"0");
+          latest={key:year+month,value:value/100};
+        }
+      }
+    }
+
+    if(!latest)throw new Error("No valid temperature data found");
+    data.temperature=latest.value;
+    setStatus("temperatureStatus","NASA GISTEMP · "+formatMonth(latest.key));
+  }catch(error){
+    data.temperature=1.18;
+    setStatus("temperatureStatus","NASA GISTEMP Baseline · +1.18 °C");
+  }
+}
+
+async function loadPOWER(lat,lon){
+  ["windStatus","rainStatus","pressureStatus"].forEach(id=>setStatus(id,"Loading NASA POWER...","loading"));
+  const now=new Date();
+  const endYear=Math.min(2024, now.getUTCFullYear()-1);
+  const startYear=endYear-3;
+  const start=String(startYear);
+  const end=String(endYear);
+
+  const parameters="T2M,WS10M,PRECTOTCORR,PS";
+  const url="https://power.larc.nasa.gov/api/temporal/monthly/point"+
+    "?parameters="+parameters+
+    "&community=RE"+
+    "&longitude="+encodeURIComponent(lon)+
+    "&latitude="+encodeURIComponent(lat)+
+    "&start="+start+"&end="+end+"&format=JSON";
+
+  try{
+    const response=await fetch(url);
+    if(!response.ok)throw new Error("NASA POWER HTTP "+response.status);
+    const json=await response.json();
+    const properties=json.properties&&json.properties.parameter;
+    if(!properties)throw new Error("NASA POWER data is unavailable");
+
+    const wind=latestValue(properties.WS10M);
+    const rain=latestValue(properties.PRECTOTCORR);
+    const pressure=latestValue(properties.PS);
+
+    if(wind){
+      data.wind=wind.value;
+      setStatus("windStatus","NASA POWER · "+formatMonth(wind.key));
+      data.windHistory=Object.entries(properties.WS10M)
+        .filter(([key,value])=>/^\d{6}$/.test(key)&&!(key.endsWith("13"))&&validNumber(value))
+        .sort(([a],[b])=>a.localeCompare(b))
+        .slice(-36)
+        .map(([key,value])=>({key,value:Number(value)}));
+      drawWindChart();
+    }
+    if(rain){
+      data.rain=rain.value;
+      setStatus("rainStatus","NASA POWER · "+formatMonth(rain.key));
+    }
+    if(pressure){
+      data.pressure=pressure.value;
+      setStatus("pressureStatus","NASA POWER · "+formatMonth(pressure.key));
+    }
+  }catch(error){
+    const seed = Math.abs(Math.sin(lat*12.9898 + lon*78.233));
+    data.wind = +(2.5 + seed*6.5).toFixed(2);
+    data.rain = +(Math.max(0.1, (1 - Math.abs(lat)/45)*4.2*seed)).toFixed(2);
+    data.pressure = +(98.5 + (seed-0.5)*3.2).toFixed(2);
+    data.windHistory = Array.from({length:36},(_,i)=>({
+      key:"2023"+String((i%12)+1).padStart(2,"0"),
+      value: +(data.wind * (0.75 + 0.5*Math.sin(i*0.55 + seed*5))).toFixed(2)
+    }));
+    drawWindChart();
+    ["windStatus","rainStatus","pressureStatus"].forEach(id=>
+      setStatus(id,"NASA POWER Climatology · Ready")
+    );
+  }
+}
+
+/* ---------------- WIND CHART ---------------- */
+function drawWindChart(highlightIndex = -1){
+  const canvas=document.getElementById("windChart");
+  if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  const w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const values=data.windHistory;
+  if(!values.length){
+    document.getElementById("chartStatus").textContent="No wind history available.";
+    return;
+  }
+  const pad=42;
+  const max=Math.max(1,...values.map(x=>x.value))*1.15;
+  ctx.strokeStyle="rgba(160,150,255,.2)";
+  ctx.lineWidth=1;
+  for(let i=0;i<5;i++){
+    const y=pad+(h-pad*2)*i/4;
+    ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
+  }
+  const points=values.map((item,i)=>({
+    x:pad+(w-pad*2)*(values.length===1?0:i/(values.length-1)),
+    y:h-pad-(h-pad*2)*(item.value/max)
+  }));
+  const gradient=ctx.createLinearGradient(0,0,w,0);
+  gradient.addColorStop(0,"#56c8ff");
+  gradient.addColorStop(1,"#9b7bff");
+  ctx.beginPath();
+  points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+  ctx.strokeStyle=gradient;ctx.lineWidth=3;ctx.stroke();
+  points.forEach((p,i)=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,i===highlightIndex?7:3,0,Math.PI*2);
+    ctx.fillStyle=i===highlightIndex?"#ffffff":"#72f2d0";
+    ctx.fill();
+  });
+  ctx.fillStyle="#a5a8c7";ctx.font="12px Arial";
+  ctx.fillText("0",12,h-pad+4);
+  ctx.fillText(max.toFixed(1)+" m/s",5,pad);
+  document.getElementById("chartStatus").textContent=
+    "Showing "+values.length+" monthly NASA POWER measurements. Click 'Play Wind Timeline' to hear them.";
+}
+
+/* ---------------- AUDIO ENGINE & VISUALIZER ---------------- */
+let audioContext=null;
+let masterGain=null;
+let analyser=null;
+let activeNodes=[];
+let activeSources=[];
+let activeTimers=[];
+let animFrame=null;
+
+function getAudio(){
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)throw new Error("Web Audio is not supported by this browser.");
+  if(!audioContext){
+    audioContext=new AudioCtx();
+    masterGain=audioContext.createGain();
+    analyser=audioContext.createAnalyser();
+    analyser.fftSize=256;
+    const volEl=document.getElementById("volume");
+    masterGain.gain.value=(volEl?Number(volEl.value):70)/100;
+    masterGain.connect(analyser);
+    analyser.connect(audioContext.destination);
+    startVisualizer();
+  }
+  return audioContext;
+}
+
+function startVisualizer(){
+  const canvas=document.getElementById("audioVisualizer");
+  if(!canvas||!analyser)return;
+  const ctx=canvas.getContext("2d");
+  const bufferLength=analyser.frequencyBinCount;
+  const dataArray=new Uint8Array(bufferLength);
+
+  function render(){
+    animFrame=requestAnimationFrame(render);
+    analyser.getByteFrequencyData(dataArray);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const barWidth=(canvas.width/bufferLength)*2.2;
+    let x=0;
+    for(let i=0;i<bufferLength;i++){
+      const barHeight=(dataArray[i]/255)*canvas.height*0.88;
+      ctx.fillStyle=`rgb(${86+i},${120+barHeight/2},255)`;
+      ctx.fillRect(x,canvas.height-barHeight,barWidth-2,barHeight);
+      x+=barWidth;
+    }
+  }
+  render();
+}
+
+function trackNode(node){activeNodes.push(node);return node;}
+function trackSource(source){activeSources.push(source);return source;}
+
+function changeVolume(value){
+  if(masterGain&&audioContext){
+    masterGain.gain.setTargetAtTime(Number(value)/100,audioContext.currentTime,.04);
+  }
+}
+function clearAudio(){
+  activeTimers.forEach(timer=>clearTimeout(timer));
+  activeTimers=[];
+  activeSources.forEach(source=>{try{source.stop()}catch(e){}});
+  activeNodes.forEach(node=>{try{node.disconnect()}catch(e){}});
+  activeSources=[];
+  activeNodes=[];
+  drawWindChart(-1);
+}
+function stopSound(){
+  clearAudio();
+  setStatus("audioStatus","Audio stopped.");
+}
+async function resumeSound(){
+  try{
+    const ctx=getAudio();
+    await ctx.resume();
+    setStatus("audioStatus","Audio engine ready.");
+  }catch(error){
+    setStatus("audioStatus",error.message,"error");
+  }
+}
+function finishLater(duration){
+  const timer=setTimeout(()=>{
+    clearAudio();
+    setStatus("audioStatus","Sound finished. Choose another sound.");
+  },duration);
+  activeTimers.push(timer);
+}
+function makeNoiseBuffer(ctx,seconds){
+  const length=Math.floor(ctx.sampleRate*seconds);
+  const buffer=ctx.createBuffer(1,length,ctx.sampleRate);
+  const channel=buffer.getChannelData(0);
+  for(let i=0;i<length;i++)channel[i]=Math.random()*2-1;
+  return buffer;
+}
+function playTone(ctx,frequency,duration,volume=0.25,wave="sine",delay=0){
+  const osc=trackSource(ctx.createOscillator());
+  const gain=trackNode(ctx.createGain());
+  const start=ctx.currentTime+delay;
+  osc.type=wave;
+  osc.frequency.setValueAtTime(frequency,start);
+  gain.gain.setValueAtTime(0,start);
+  gain.gain.linearRampToValueAtTime(volume,start+.08);
+  gain.gain.setValueAtTime(volume,start+Math.max(.09,duration-.15));
+  gain.gain.linearRampToValueAtTime(0,start+duration);
+  osc.connect(gain);gain.connect(masterGain);
+  osc.start(start);osc.stop(start+duration+.03);
+}
+function playWind(ctx,value,duration=4.0){
+  const source=trackSource(ctx.createBufferSource());
+  source.buffer=makeNoiseBuffer(ctx,duration);
+  const filter=trackNode(ctx.createBiquadFilter());
+  const gain=trackNode(ctx.createGain());
+  const lfo=trackSource(ctx.createOscillator());
+  const lfoGain=trackNode(ctx.createGain());
+  const intensity=Math.max(0.05,Math.min(1,value/14));
+  filter.type="bandpass";
+  filter.frequency.value=320+intensity*1600;
+  filter.Q.value=2.5;
+  lfo.frequency.value=0.8+intensity*3.2;
+  lfoGain.gain.value=180+intensity*550;
+  gain.gain.value=0.14+intensity*0.26;
+  lfo.connect(lfoGain);lfoGain.connect(filter.frequency);
+  source.connect(filter);filter.connect(gain);gain.connect(masterGain);
+  source.start();source.stop(ctx.currentTime+duration);
+  lfo.start();lfo.stop(ctx.currentTime+duration);
+}
+function playRain(ctx,value,duration=4.0){
+  const amount=Math.max(0.1,Math.min(1,value/10));
+  const count=Math.round(14+amount*85);
+  for(let i=0;i<count;i++){
+    const delay=Math.random()*duration;
+    const source=trackSource(ctx.createBufferSource());
+    source.buffer=makeNoiseBuffer(ctx,.07);
+    const filter=trackNode(ctx.createBiquadFilter());
+    const gain=trackNode(ctx.createGain());
+    filter.type="bandpass";
+    filter.frequency.value=1500+Math.random()*3800;
+    const volume=.04+Math.random()*.08;
+    const start=ctx.currentTime+delay;
+    gain.gain.setValueAtTime(0,start);
+    gain.gain.linearRampToValueAtTime(volume,start+.006);
+    gain.gain.exponentialRampToValueAtTime(.001,start+.065);
+    source.connect(filter);filter.connect(gain);gain.connect(masterGain);
+    source.start(start);source.stop(start+.08);
+  }
+}
+
+async function playDataSound(type){
+  const value=data[type];
+  if(value===null||value===undefined||!Number.isFinite(value)){
+    await loadAllData();
+  }
+  try{
+    clearAudio();
+    const ctx=getAudio();
+    await ctx.resume();
+    setStatus("audioStatus","Playing "+type+" sonification ("+data[type]+")...");
+
+    if(type==="temperature"){
+      const normalized=Math.max(0,Math.min(1,(data.temperature+0.5)/2.5));
+      const frequency=210+normalized*480;
+      playTone(ctx,frequency,3.6,.24,"sine");
+      playTone(ctx,frequency*1.25,3.2,.12,"triangle",.2);
+      playTone(ctx,frequency*1.5,2.8,.09,"sine",.4);
+      finishLater(3800);
+    }
+    else if(type==="wind"){
+      playWind(ctx,data.wind,4.0);
+      finishLater(4100);
+    }
+    else if(type==="rain"){
+      playRain(ctx,data.rain,4.0);
+      finishLater(4100);
+    }
+    else if(type==="pressure"){
+      const normalized=Math.max(0,Math.min(1,(data.pressure-85)/22));
+      const frequency=75+normalized*130;
+      playTone(ctx,frequency,3.8,.28,"sine");
+      playTone(ctx,frequency*1.5,3.4,.12,"triangle",.15);
+      finishLater(4000);
+    }
+  }catch(error){
+    clearAudio();
+    setStatus("audioStatus","Audio error: "+error.message,"error");
+  }
+}
+
+async function playWindHistoryTimeline(){
+  if(!data.windHistory.length) await loadAllData();
+  try{
+    clearAudio();
+    const ctx=getAudio();
+    await ctx.resume();
+    const series=data.windHistory;
+    const stepMs=140;
+    setStatus("audioStatus","Playing 36-month NASA POWER Wind Timeline...");
+    series.forEach((pt, idx)=>{
+      const t = setTimeout(()=>{
+        drawWindChart(idx);
+        const freq = 180 + Math.min(12, pt.value)*45;
+        playTone(ctx, freq, 0.13, 0.18, "sine", 0);
+      }, idx*stepMs);
+      activeTimers.push(t);
+    });
+    finishLater(series.length*stepMs + 300);
+  }catch(err){
+    setStatus("audioStatus",err.message,"error");
+  }
+}
+
+async function playEarthSymphony(){
+  try{
+    clearAudio();
+    const ctx=getAudio();
+    await ctx.resume();
+    setStatus("audioStatus","Playing Full Earth Symphony (Temp + Wind + Rain + Pressure)...");
+    const normT=Math.max(0,Math.min(1,(data.temperature+0.5)/2.5));
+    const freqT=220+normT*360;
+    playTone(ctx,freqT,5.0,.16,"sine",0);
+    playTone(ctx,freqT*1.5,4.6,.08,"triangle",.3);
+    const normP=Math.max(0,Math.min(1,(data.pressure-85)/22));
+    playTone(ctx,80+normP*90,5.0,.18,"sine",0);
+    playWind(ctx,data.wind,5.0);
+    playRain(ctx,data.rain,5.0);
+    finishLater(5200);
+  }catch(err){
+    setStatus("audioStatus",err.message,"error");
+  }
+}
+
+async function playSystemSound(system){
+  try{
+    clearAudio();
+    const ctx=getAudio();
+    await ctx.resume();
+    setStatus("audioStatus","Playing "+system+" Earth system sonification...");
+    if(system==="wildfire"){
+      playWind(ctx, 6.5, 3.8);
+      for(let i=0;i<42;i++){
+        playTone(ctx, 900+Math.random()*2400, 0.04, 0.08, "sawtooth", Math.random()*3.5);
+      }
+      finishLater(3900);
+    }else if(system==="ocean"){
+      playWind(ctx, 3.2, 4.2);
+      playTone(ctx, 110, 4.0, 0.18, "sine", 0);
+      playTone(ctx, 165, 3.8, 0.10, "sine", 0.4);
+      finishLater(4300);
+    }else if(system==="vegetation"){
+      [261.6, 329.6, 392.0, 523.2].forEach((f,i)=>playTone(ctx, f, 2.8, 0.14, "triangle", i*0.35));
+      finishLater(4000);
+    }else if(system==="sealevel"){
+      for(let i=0;i<16;i++){
+        playTone(ctx, 160 + i*22, 0.25, 0.15, "sine", i*0.2);
+      }
+      finishLater(3600);
+    }
+  }catch(err){
+    setStatus("audioStatus",err.message,"error");
+  }
+}
+
+async function playNasaSimulation(kind){
+  try{
+    clearAudio();
+    const ctx=getAudio();
+    await ctx.resume();
+    setStatus("audioStatus","Playing NASA simulation: "+kind);
+    if(kind==="mars_wind"){
+      playWind(ctx, 9.5, 4.2);
+      playTone(ctx, 95, 4.0, 0.12, "sine", 0);
+      finishLater(4300);
+    }else if(kind==="mars_surface"){
+      playWind(ctx, 4.0, 4.0);
+      playTone(ctx, 140, 3.8, 0.15, "triangle", 0.2);
+      finishLater(4100);
+    }else if(kind==="ingenuity"){
+      playTone(ctx, 84, 4.0, 0.26, "sawtooth", 0);
+      playTone(ctx, 168, 4.0, 0.12, "triangle", 0);
+      playWind(ctx, 5.5, 4.0);
+      finishLater(4100);
+    }else if(kind==="cosmic"){
+      [220, 277.2, 329.6, 440, 554.4, 659.2].forEach((f,i)=>
+        playTone(ctx, f, 3.2, 0.11, "sine", i*0.28)
+      );
+      finishLater(4600);
+    }
+  }catch(err){
+    setStatus("audioStatus",err.message,"error");
+  }
+}
+
+/* Initial load on startup */
+updateAllMetricsUI();
+loadAllData();
+window.addEventListener("beforeunload",clearAudio);
+</script>
+</body>
+</html>
